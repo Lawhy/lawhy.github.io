@@ -1254,6 +1254,10 @@ body {
   line-height: inherit;
 }
 
+.post-body .poem .poem__line--stanza {
+  margin-top: 1.2em;
+}
+
 /* Markers on poem lines: zero-width inline-block so they render at their
    normal superscript position but don't widen the line — keeps the Chinese
    characters centered identically across all lines (with or without notes). */

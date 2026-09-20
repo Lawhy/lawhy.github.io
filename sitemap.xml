@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://yuanhe.wiki/</loc>
-    <lastmod>2026-09-06</lastmod>
+    <lastmod>2026-09-19</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -48,6 +48,11 @@
   <url>
     <loc>https://yuanhe.wiki/posts/literature/qingming/</loc>
     <lastmod>2019-04-05</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yuanhe.wiki/posts/literature/ke-dou/</loc>
+    <lastmod>2018-03-31</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
