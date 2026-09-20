@@ -6,7 +6,7 @@ slug: ke-dou
 authors: 知陌若
 cover: images/cover.webp
 cover_position: left center
-summary: "清潭里游着波动的黑 微波轻漾 阳光初暖 细砂里裹着稚嫩的白 笑声所及 鸟动林吹"
+summary: "节节败退！节节败退！这是来自镜面外 密度稀薄的成功"
 ---
 
 <div class="poem">
