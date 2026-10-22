@@ -1,0 +1,48 @@
+<section class="slide slide--question" data-toc="The question">
+  <div class="slide-inner">
+    <p class="q-context">Post-training reports usually read like system cards: what was trained, rarely how.</p>
+
+    <h2 class="q-ask">With open-source resources, how far can<br>a small team take a base model?</h2>
+
+    <dl class="q-spec">
+      <dt>Stack</dt>
+      <dd class="mono">slime · Megatron-LM · SGLang · Strands Agents</dd>
+      <dt>Compute</dt>
+      <dd><strong>8–64</strong> nodes of 8×H200 per stage <span class="muted">· largest is SFT: 64 nodes, ~13 days</span></dd>
+    </dl>
+
+    <div class="q-cols">
+      <div class="q-col">
+        <p class="q-head">SFT</p>
+        <p class="q-num">27B<span class="q-unit">tokens</span></p>
+        <ul class="q-rows">
+          <li><span>samples</span><span class="q-n">9M</span></li>
+          <li><span>public datasets</span><span class="q-n">17</span></li>
+        </ul>
+      </div>
+
+      <div class="q-col">
+        <p class="q-head">Single-turn RL</p>
+        <p class="q-num">~253K<span class="q-unit">prompts</span></p>
+        <ul class="q-rows">
+          <li><span>reasoning <span class="q-syn">20K synth</span></span><span class="q-n">121K</span></li>
+          <li><span>competitive coding</span><span class="q-n">29K</span></li>
+          <li><span>instruction following <span class="q-syn">all synth</span></span><span class="q-n">27K</span></li>
+          <li><span>RLHF</span><span class="q-n">76K</span></li>
+        </ul>
+      </div>
+
+      <div class="q-col">
+        <p class="q-head">Agentic RL</p>
+        <p class="q-num">~8.2K<span class="q-unit">tasks</span></p>
+        <ul class="q-rows">
+          <li><span>synthetic MCP</span><span class="q-n">2K</span></li>
+          <li><span>SWE &amp; terminal</span><span class="q-n">4K</span></li>
+          <li><span>open-web search</span><span class="q-n">2.2K</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footnote-l q-foot"><span class="q-syn">synth</span> synthesized by us. With these, we built Rufus-Air on GLM-4.5-Air-Base (106B-A12B). Work done earlier this year; paper out Sep 2026: <span class="nw"><a class="paper" href="https://arxiv.org/abs/2609.29421" target="_blank"><em>Rufus-Air: An Open LLM Post-Training Recipe</em></a> (arXiv 2609.29421).</span></p>
+  </div>
+</section>

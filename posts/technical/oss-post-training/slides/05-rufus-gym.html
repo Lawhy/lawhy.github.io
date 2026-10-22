@@ -1,0 +1,27 @@
+<section class="slide slide--gym" data-toc="Rufus-Gym">
+  <div class="slide-inner">
+    <h2>Our harness stack for agentic RL</h2>
+    <p class="gym-sub">Open-source agent tooling underneath, the details RL training needs on top.</p>
+
+    <div class="gym-layer">
+      <p class="gym-layer-l">built upon</p>
+      <ul class="gym-chips">
+        <li>Strands Agents</li><li>SGLang</li><li>E2B</li><li>Ray</li><li>MCP</li><li>Harbor</li><li class="gym-chip-more">…</li>
+      </ul>
+    </div>
+
+    <div class="gym-box">
+      <p class="gym-box-t">Rufus-Gym <span class="gym-box-s">adds what training needs</span></p>
+      <div class="gym-feats">
+        <div><p class="gf-t">Token-in/token-out</p><p class="gf-d">preserve exact token trajectories</p></div>
+        <div><p class="gf-t">Typed terminations</p><p class="gf-d">tell done from budget, overflow, failure</p></div>
+        <div><p class="gf-t">Hooked agent loop</p><p class="gf-d">one shared loop, harnesses built as hooks</p></div>
+        <div><p class="gf-t">Stateful sandboxes</p><p class="gf-d">self-hosted E2B on AWS</p></div>
+        <div><p class="gf-t">Robust tool execution</p><p class="gf-d">concurrent, safely retried, faithful to what ran</p></div>
+        <div><p class="gf-t">Distributed rollout</p><p class="gf-d">reduce CPU contention</p></div>
+      </div>
+    </div>
+
+    <p class="footnote-l">Rufus-Gym was my main contribution to Rufus-Air.</p>
+  </div>
+</section>

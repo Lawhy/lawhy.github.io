@@ -1,0 +1,26 @@
+<section class="slide slide--stages" data-toc="Stages">
+  <div class="slide-inner">
+    <h2>Eight stages, from hard rewards to soft ones</h2>
+    <p class="st-sub">Ordered mainly by reward, from hard to soft, and roughly by capability, from basic to advanced.</p>
+
+    <table class="st-table">
+      <thead>
+        <tr><th></th><th>Stage</th><th>Data</th><th>Reward</th></tr>
+      </thead>
+      <tbody>
+        <tr class="st-sft"><td class="st-i">1</td><td>SFT</td><td>27B tokens (9M samples)</td><td><span class="rw rw--tok">tokens</span>next-token loss</td></tr>
+        <tr><td class="st-i">2</td><td>Reasoning RL</td><td>121K math, STEM, logic prompts</td><td><span class="rw rw--rule">rule</span>program checks</td></tr>
+        <tr><td class="st-i">3</td><td>Coding RL</td><td>29K competitive coding prompts</td><td><span class="rw rw--rule">rule</span>execution tests</td></tr>
+        <tr><td class="st-i">4</td><td>IF RL</td><td>27K synthesized prompts</td><td><span class="rw rw--hybrid">rule + judge</span>constraints &amp; rubrics</td></tr>
+        <tr><td class="st-i">5</td><td>General Agent</td><td>~2K MCP tasks</td><td><span class="rw rw--rule">rule</span>server state checks</td></tr>
+        <tr><td class="st-i">6</td><td>Coding Agent</td><td>~4K SWE &amp; terminal tasks</td><td><span class="rw rw--rule">rule</span>execution tests</td></tr>
+        <tr><td class="st-i">7</td><td>Search Agent</td><td>~2.2K tasks</td><td><span class="rw rw--hybrid">rule + judge</span>constraints &amp; LLM judge</td></tr>
+        <tr><td class="st-i">8</td><td>RLHF</td><td>76K preference prompts</td><td><span class="rw rw--rm">RM</span>reward model &amp; length penalty</td></tr>
+      </tbody>
+    </table>
+
+    <p class="st-note">Every RL stage runs GRPO or GSPO. All but RLHF filter prompts by learnability, keeping only those the policy can still learn from; the rest is stage-specific, such as truncated IS or mean-only advantages.</p>
+
+    <p class="footnote-l">Serial rather than one mixed RL run over all environments, given our compute budget: an order that worked, not one shown to be optimal. Each stage starts from the previous checkpoint; details in <a class="paper" href="https://arxiv.org/abs/2609.29421" target="_blank"><em>Rufus-Air: An Open LLM Post-Training Recipe</em></a> (arXiv 2609.29421), §3.</p>
+  </div>
+</section>

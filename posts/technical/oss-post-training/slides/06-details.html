@@ -1,0 +1,41 @@
+<section class="slide slide--details" data-toc="Details">
+  <div class="slide-inner">
+    <h2>Small details, silent failures</h2>
+    <p class="dt-sub">Most of these break training without raising an error.</p>
+
+    <table class="dt-table">
+      <thead>
+        <tr><th>Detail</th><th>If you miss it</th><th>What we do</th></tr>
+      </thead>
+      <tbody>
+        <tr class="frag">
+          <td>Token-in/token-out</td>
+          <td>re&#8209;tokenized text silently drifts off&#8209;policy</td>
+          <td>keep sampled ids, template only new turns; branch if history is rewritten</td>
+        </tr>
+        <tr class="frag">
+          <td>Strict tool parsing</td>
+          <td>serving parsers often repair broken syntax, crediting the model for calls it never wrote</td>
+          <td>parse exactly as emitted; a malformed call returns its error to the model</td>
+        </tr>
+        <tr class="frag">
+          <td>Disable streaming</td>
+          <td>token streaming slows rollouts for nothing, yet turning it off changes some harnesses (pi stops early)</td>
+          <td>generate each turn whole; replay it as one SSE chunk to harnesses that stream</td>
+        </tr>
+        <tr class="frag">
+          <td>Classify every rollout</td>
+          <td>a sandbox crash, a budget cutoff, and a wrong answer all score 0; the policy takes the blame</td>
+          <td>type every rollout's termination, so we know when to retry, abort, or accept a sample</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="dt-more frag">
+      <span class="dt-more-l">…and more</span>
+      <ul class="dt-chips">
+        <li>chat-template drift</li><li>per-turn token budgets</li><li>per-token metadata payloads</li>
+      </ul>
+    </div>
+  </div>
+</section>

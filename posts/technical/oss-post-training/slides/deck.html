@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Source for LLM Post-Training: What Can We Build?</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="deck.css">
+</head>
+
+<body>
+
+  <div class="deck" id="deck"></div>
+
+  <div class="progress" id="progress"></div>
+  <div class="hint" id="hint">Click left / right or &larr; &rarr; &middot; O for overview</div>
+
+  <script>
+    (function () {
+      var slideFiles = [
+        '01-title.html',
+        '02-question.html',
+        '03-stages.html',
+        '04-results.html',
+        '05-rufus-gym.html',
+        '06-details.html',
+        '07-tokin.html',
+      ];
+
+      var deck = document.getElementById('deck');
+
+      Promise.all(slideFiles.map(function (f) {
+        return fetch(f).then(function (r) { return r.text(); });
+      })).then(function (htmls) {
+        deck.innerHTML = htmls.join('\n');
+
+        var slides = deck.querySelectorAll('.slide');
+        slides.forEach(function (s, i) {
+          if (i === 0) s.classList.add('active');
+          else s.classList.remove('active');
+        });
+
+        var script = document.createElement('script');
+        script.src = '/assets/js/slides.js';
+        document.body.appendChild(script);
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

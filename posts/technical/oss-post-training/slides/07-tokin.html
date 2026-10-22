@@ -1,0 +1,59 @@
+<section class="slide slide--tokin" data-toc="tokin">
+  <div class="slide-inner">
+    <h2>tokin: make any agent harness token-native</h2>
+    <p class="tk-sub">Manages multi-turn rollouts correctly and efficiently, so any agent harness can be trained properly.</p>
+
+    <div class="tk-flow">
+      <div class="tk-side">
+        <p class="tk-side-l">any harness, unmodified</p>
+        <ul class="tk-chips">
+          <li>pi</li><li>opencode</li><li>mini-swe-agent</li><li class="tk-chip-you">your harness</li>
+        </ul>
+      </div>
+
+      <div class="tk-link">
+        <p class="tk-link-t">chat API</p>
+        <svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><line x1="6" y1="7" x2="94" y2="7" /><path d="M92 3 L100 7 L92 11 z" /><line x1="6" y1="17" x2="94" y2="17" /><path d="M8 13 L0 17 L8 21 z" /></svg>
+        <p class="tk-link-b">text in, text out</p>
+      </div>
+
+      <div class="tk-core">
+        <div class="tk-core-h">
+          <p class="tk-name">tokin</p>
+          <a class="tk-gh" href="https://github.com/Lawhy/tokin" target="_blank"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Lawhy/tokin</a>
+        </div>
+        <ul class="tk-does">
+          <li>preserves tokens and manages rollouts</li>
+          <li>owns both the chat template and tool parsing</li>
+          <li>absorbs harness quirks that break training</li>
+        </ul>
+      </div>
+
+      <div class="tk-link">
+        <p class="tk-link-t tk-toks"><span>5002</span><span>8747</span><span>369</span></p>
+        <svg viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true"><line x1="6" y1="7" x2="94" y2="7" /><path d="M92 3 L100 7 L92 11 z" /><line x1="6" y1="17" x2="94" y2="17" /><path d="M8 13 L0 17 L8 21 z" /></svg>
+        <p class="tk-link-b">token in, token out</p>
+      </div>
+
+      <div class="tk-node tk-engine">
+        <p class="tk-node-l">any inference engine</p>
+        <p class="tk-node-t">SGLang · vLLM · …</p>
+      </div>
+
+      <div class="tk-down">
+        <svg viewBox="0 0 12 60" preserveAspectRatio="none" aria-hidden="true"><line x1="6" y1="0" x2="6" y2="52" /><path d="M1 50 L6 60 L11 50 z" /></svg>
+        <p class="tk-link-b">token_ids · loss_mask · logprobs</p>
+      </div>
+
+      <div class="tk-node tk-trainer">
+        <p class="tk-node-l">any trainer</p>
+        <p class="tk-node-t">slime · miles · verl · …</p>
+      </div>
+    </div>
+
+    <div class="tk-foot">
+      <p class="tk-cta">Try it, open issues, send PRs: contributions and discussions are welcome.</p>
+      <p class="tk-status">The current alpha supports OpenAI-compatible harnesses and SGLang; a blog post with results on open-source harnesses comes with the beta release.</p>
+    </div>
+  </div>
+</section>
