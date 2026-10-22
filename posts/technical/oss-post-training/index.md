@@ -17,7 +17,7 @@ comments: true
 </ul>
 </aside>
 
-This short talk asks how far a small team can take a base model with open-source resources alone. Our answer is [Rufus-Air](https://arxiv.org/abs/2609.29421), a post-training effort at Amazon Rufus led by Tuo Zhao: an open recipe on GLM-4.5-Air-Base with eight serial stages, from hard rewards to soft ones, built on slime, Megatron-LM, SGLang and Strands Agents. The talk then zooms into the harness stack behind its agentic stages, the small details that silently break agentic RL, and finally introduces [tokin](https://github.com/Lawhy/tokin), an open-source gateway that makes any agent harness token-native...
+A lightning talk given at [Open Infra Night for Agent Builders](https://luma.com/jsu2t3ad), part of Open Source AI Week in San Francisco. It asks how far a small team can take a base model with open-source resources alone. Our answer is [Rufus-Air](https://arxiv.org/abs/2609.29421), a post-training effort at Amazon Rufus led by Tuo Zhao: an open recipe on GLM-4.5-Air-Base with eight serial stages, from hard rewards to soft ones, built on slime, Megatron-LM, SGLang and Strands Agents. The talk then zooms into the harness stack behind its agentic stages, the small details that silently break agentic RL, and finally introduces [tokin](https://github.com/Lawhy/tokin), an open-source gateway that makes any agent harness token-native...
 
 <div class="post-deck">
   <iframe class="post-deck__frame" src="slides/deck.html" title="Open Source for LLM Post-Training: What Can We Build? — slides" allowfullscreen></iframe>

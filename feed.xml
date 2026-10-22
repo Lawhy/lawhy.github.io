@@ -12,7 +12,7 @@
       <link>https://yuanhe.wiki/posts/technical/oss-post-training/</link>
       <guid>https://yuanhe.wiki/posts/technical/oss-post-training/</guid>
       <pubDate>Thu, 22 Oct 2026 00:00:00 GMT</pubDate>
-      <description><![CDATA[This short talk asks how far a small team can take a base model with open-source resources alone. Our answer is Rufus-Air, a post-training effort at Amazon Rufus led by Tuo Zhao: an open recipe on GLM-4.5-Air-Base with eight serial stages, from hard rewards to soft ones, built on slime, Megatron-LM, SGLang and Strands Agents. The talk then zooms into the harness stack behind its agentic stages, the small details that silently break agentic RL, and finally introduces tokin, an open-source gateway that makes any agent harness token-native…]]></description>
+      <description><![CDATA[A lightning talk given at Open Infra Night for Agent Builders, part of Open Source AI Week in San Francisco. It asks how far a small team can take a base model with open-source resources alone. Our answer is Rufus-Air, a post-training effort at Amazon Rufus led by Tuo Zhao: an open recipe on GLM-4.5-Air-Base with eight serial stages, from hard rewards to soft ones, built on slime, Megatron-LM, SGLang and Strands Agents. The talk then zooms into the harness stack behind its agentic stages, the small details that silently break agentic RL, and finally introduces tokin, an open-source gateway that makes any agent harness token-native…]]></description>
     </item>
     <item>
       <title>兀自</title>
