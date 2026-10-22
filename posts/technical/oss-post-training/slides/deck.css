@@ -1050,3 +1050,43 @@ a {
   background: var(--accent);
   color: #fff;
 }
+
+/* ── Print: one slide per page, every fragment shown ── */
+
+@page {
+  size: 1920px 1080px;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body,
+  .deck {
+    height: auto;
+    overflow: visible;
+    background: var(--bg);
+    display: block;
+  }
+
+  .slide {
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    opacity: 1;
+    break-after: page;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .frag {
+    opacity: 1;
+    transform: none;
+  }
+
+  .progress,
+  .hint,
+  .toc-overlay {
+    display: none !important;
+  }
+}
