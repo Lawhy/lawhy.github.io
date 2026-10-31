@@ -317,7 +317,7 @@ body {
   width: 100%;
   height: auto;
   border-radius: 2px;
-  filter: saturate(0.92) contrast(0.98);
+  mix-blend-mode: multiply;
 }
 
 /* Icon list (Find me) */
