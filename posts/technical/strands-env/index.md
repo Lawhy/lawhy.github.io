@@ -10,12 +10,12 @@ comments: true
 <aside class="post-aside">
 <h3>Resources</h3>
 <ul>
-  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/strands-rl/strands-env">strands-rl/strands-env</a></li>
-  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/strands-rl/strands-sglang">strands-rl/strands-sglang</a></li>
+  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/open-rollout/strands-env">open-rollout/strands-env</a></li>
+  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/open-rollout/strands-sglang">open-rollout/strands-sglang</a></li>
 </ul>
 </aside>
 
-This slide deck discusses the principles behind how we built agent environments for agentic RL with [strands-env](https://github.com/strands-rl/strands-env) and [strands-sglang](https://github.com/strands-rl/strands-sglang). An agent environment is essentially a **rollout system** — and getting it right requires infra-level understanding before approaching the algorithms...
+This slide deck discusses the principles behind how we built agent environments for agentic RL with [strands-env](https://github.com/open-rollout/strands-env) and [strands-sglang](https://github.com/open-rollout/strands-sglang). An agent environment is essentially a **rollout system** — and getting it right requires infra-level understanding before approaching the algorithms...
 
 <div class="post-deck">
   <iframe class="post-deck__frame" src="slides/deck.html" title="From Agent Loops to Agent Environments — slides" allowfullscreen></iframe>

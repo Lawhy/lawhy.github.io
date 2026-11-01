@@ -10,7 +10,7 @@ comments: true
 <aside class="post-aside">
 <h3>Resources</h3>
 <ul>
-  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/strands-rl/strands-sglang">strands-rl/strands-sglang</a></li>
+  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/open-rollout/strands-sglang">open-rollout/strands-sglang</a></li>
   <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=strandsagents.com&sz=32" alt=""><a href="https://strandsagents.com/docs/community/model-providers/sglang/">Strands · SGLang docs</a></li>
   <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/THUDM/slime/tree/main/examples/strands_sglang">slime · examples</a></li>
 </ul>
