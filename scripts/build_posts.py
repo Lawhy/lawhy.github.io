@@ -272,6 +272,8 @@ def render_post(md_path: Path, template: str, css_versions: dict, js_versions: d
     twitter_card = "summary_large_image"
 
     page = template
+    # The heading alone may carry markup (`title_html`); the plain title stays everywhere else.
+    page = page.replace("{{title_heading}}", fm.get("title_html") or escape(str(title)))
     page = page.replace("{{title}}", escape(str(title)))
     page = page.replace("{{authors_line}}", authors_html)
     page = page.replace("{{date_display}}", date_display)
