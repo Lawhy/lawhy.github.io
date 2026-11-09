@@ -41,7 +41,7 @@
         <span class="toc-marker" aria-hidden="true"></span>
         <ul>
           <li><a href="#harnesses-speak-text" data-toc>Harnesses speak text</a></li>
-          <li><a href="#two-properties" data-toc>Two properties</a></li>
+          <li><a href="#a-gateway-with-two-properties" data-toc>A gateway with two properties</a></li>
           <li><a href="#inside-the-gateway" data-toc>Inside the gateway</a></li>
           <li><a href="#references" data-toc>References</a></li>
         </ul>
@@ -70,7 +70,7 @@
 <h2 id="harnesses-speak-text">Harnesses speak text</h2>
 <p>A common framing today is <code>Agent = Model + Harness</code>. Harnesses such as Claude Code, Codex, pi, opencode and Terminus, simple or elaborate, define the interaction loop: when to send the conversation so far to the model, and how to act on its reply.</p>
 <p>A harness, though, speaks text, and RL trains on tokens. Connect a harness straight to the inference engine and every turn makes a round trip: the model samples token ids $y$, the server decodes and parses them into a text message, the harness acts on it, and its next request sends back the whole conversation, which the server renders through the chat template and encodes again. Nothing makes this round trip return the ids the model sampled (Figure 2a), and the chat template may further drop past reasoning or re-serialise tool calls. Wherever an id changes, the trainer updates a token the policy never sampled, a harm illustrated repeatedly [<a href="#ref-1">1</a>, <a href="#ref-2">2</a>, <a href="#ref-3">3</a>].</p>
-<h2 id="two-properties">Two properties</h2>
+<h2 id="a-gateway-with-two-properties">A gateway with two properties</h2>
 <p>tokin solves this for <strong>any</strong> harness. It is a gateway between harnesses and the inference engine (Figure 1), and it guarantees two properties. For the request at turn $t$, counted below, write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; and $a_t$ for the assistant message tokin parses from them. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.</p>
 <div class="post-property">
 <p><span class="post-property__label">Property 1 <em>(messages only)</em></span> A harness sees only messages ($h_t$, $a_t$); the token ids stay between tokin and the engine:</p>

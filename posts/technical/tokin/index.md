@@ -34,7 +34,7 @@ A common framing today is `Agent = Model + Harness`. Harnesses such as Claude Co
 
 A harness, though, speaks text, and RL trains on tokens. Connect a harness straight to the inference engine and every turn makes a round trip: the model samples token ids $y$, the server decodes and parses them into a text message, the harness acts on it, and its next request sends back the whole conversation, which the server renders through the chat template and encodes again. Nothing makes this round trip return the ids the model sampled (Figure 2a), and the chat template may further drop past reasoning or re-serialise tool calls. Wherever an id changes, the trainer updates a token the policy never sampled, a harm illustrated repeatedly [<a href="#ref-1">1</a>, <a href="#ref-2">2</a>, <a href="#ref-3">3</a>].
 
-## Two properties
+## A gateway with two properties
 
 tokin solves this for **any** harness. It is a gateway between harnesses and the inference engine (Figure 1), and it guarantees two properties. For the request at turn $t$, counted below, write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; and $a_t$ for the assistant message tokin parses from them. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.
 
