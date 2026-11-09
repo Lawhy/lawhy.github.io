@@ -18,7 +18,7 @@ comments: true
 
 <div class="post-tldr">
 <span class="post-tldr__label">TL;DR</span>
-<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It handles each rollout in a tree that grows with every request and records every harness event; every prefix in the tree stays token-in, token-out, so a request that continues from any earlier turn still builds on exactly what was sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL with the pi coding agent kept as is, improving held-out MiMo pass@1 by +29.8 and +xx points and Terminal-Bench 2.1 by +3.1 and +xx points, respectively.</p>
+<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It handles each rollout in a tree that grows with every request and records every harness event; every prefix in the tree stays token-in, token-out, so a request that continues from any earlier turn still builds on exactly what was sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL with the pi coding agent kept as is, improving held-out MiMo pass@1 by +29.4 and +xx points and Terminal-Bench 2.1 by +8.7 and +xx points, respectively.</p>
 </div>
 
 <figure>
@@ -34,27 +34,29 @@ A common framing today is `Agent = Model + Harness`. Harnesses such as Claude Co
 
 A harness, though, speaks text, and RL trains on tokens. Connect a harness straight to the inference engine and every turn makes a round trip: the model samples token ids $y$, the server decodes and parses them into a text message, the harness acts on it, and its next request sends back the whole conversation, which the server renders through the chat template and encodes again. Nothing makes this round trip return the ids the model sampled (Figure 2a), and the chat template may further drop past reasoning or re-serialise tool calls. Wherever an id changes, the trainer updates a token the policy never sampled, a harm illustrated repeatedly [<a href="#ref-1">1</a>, <a href="#ref-2">2</a>, <a href="#ref-3">3</a>].
 
-## Gateway in between
+## Two properties
 
-tokin solves this for **any** harness. It is a gateway between harnesses and the inference engine (Figure 1), and it guarantees two properties. Write $m_k$ for the messages of request $k$, $x_k$ for the prompt ids tokin sends the engine for it, and $y_k$ for the ids the model samples back; ids are sequences over the vocabulary, and juxtaposition concatenates them.
-
-<div class="post-property">
-<p><span class="post-property__label">Property 1 <em>(messages only)</em></span> A harness speaks only chat completions; token ids never cross to its side:</p>
-$$\text{harness} \xrightarrow{\;m_k\;} \text{tokin} \xrightarrow{\;x_k\;} \text{engine} \xrightarrow{\;y_k\;} \text{tokin} \xrightarrow{\;\mathrm{parse}(y_k)\;} \text{harness}.$$
-</div>
-
-A harness thus needs no change beyond its base URL, and tokin must recover all token state from $m_k$ alone. Request $k$ *continues* an earlier request $j$ when $m_k$ strictly extends $m_j\,\mathrm{parse}(y_j)$ and $y_j$ was not cut at the length limit, since a cut reply lacks the stop token that would close it. tokin attaches $k$ to a *parent*: the request it continues over the longest prefix of $m_k$, the latest on a tie; a request that continues none is a root. Usually the parent is the latest request, but a retry or an edit to history attaches to an earlier one.
+tokin solves this for **any** harness. It is a gateway between harnesses and the inference engine (Figure 1), and it guarantees two properties. For the request at turn $t$, counted below, write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; and $a_t$ for the assistant message tokin parses from them. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.
 
 <div class="post-property">
-<p><span class="post-property__label">Property 2 <em>(TITO at every prefix)</em></span> For every request $k$ with parent $j$,</p>
-$$x_k = x_j\, y_j\, \Delta_k,$$
-<p>where $\Delta_k$ encodes only the messages of $m_k$ past $m_j\,\mathrm{parse}(y_j)$. Hence $x_k$ begins with $x_i\, y_i$ for every ancestor $i$ of $k$.</p>
+<p><span class="post-property__label">Property 1 <em>(messages only)</em></span> A harness sees only messages ($h_t$, $a_t$); the token ids stay between tokin and the engine:</p>
+$$\text{harness} \xrightarrow{\;h_t\;} \text{tokin} \xrightarrow{\;x_t\;} \text{engine} \xrightarrow{\;y_t\;} \text{tokin} \xrightarrow{\;a_t\;} \text{harness} \xrightarrow{\;h_{t+1}\;} \cdots$$
 </div>
 
-The property holds by construction: tokin stores each request's $\Delta_k$ and $y_k$ and sends $x_k$ as the stored ids along the path to its parent followed by $\Delta_k$, so the only ids it ever encodes are each request's $\Delta_k$. The rollout that ends at a leaf $k$ is $x_k\, y_k$, every $y$ on its path exactly as sampled and every $\Delta$ masked from the loss. Since a parent need not be the latest request, the requests of a session form a tree (Figure 2b).
+A harness thus needs only a new base URL, and tokin recovers all token state from the history. A request *continues* an earlier one if its history extends that request's history and reply by a non-empty observation, such as tool results, and that reply was not cut at the length limit. Such a request also continues every ancestor of that one, so tokin attaches it to the deepest it continues, the latest on a tie, or makes it a root if there is none. Usually the parent is the latest request, but a retry or an edit to history attaches to an earlier one, so the requests of a session form a tree (Figure 2b). Each path from a root to a leaf is one trajectory, and $t$ counts turns within it:
+
+$$h_t = h_{t-1}\, a_{t-1}\, o_t, \qquad h_0 = o_0.$$
+
+<div class="post-property">
+<p><span class="post-property__label">Property 2 <em>(TITO at every prefix)</em></span> Along every trajectory, the ids extend as the messages do:</p>
+$$x_t = x_{t-1}\, y_{t-1}\, \Delta_t, \qquad x_0 = \Delta_0,$$
+<p>where $\Delta_t$ encodes only $o_t$, as the chat template renders it after $a_{t-1}$ (with the tools at $t = 0$), and the opening of the next assistant turn. Hence $x_t$ begins with $x_s\, y_s$ for every $s < t$.</p>
+</div>
+
+The property holds by construction: tokin stores each turn's $\Delta_t$ and $y_t$ and sends $x_t$ as the stored ids of turns $0$ to $t-1$ followed by $\Delta_t$, so the only ids it ever encodes are each turn's $\Delta_t$. A trajectory ending at turn $T$ is the rollout $x_T\, y_T$: every $y$ in it exactly as sampled and every $\Delta$ masked from the loss.
 
 <figure>
-<img src="images/prefix-tree-light.svg" alt="(a) Through text: request 1 samples ' rollout' and 's'; request 2 re-encodes the same text as ' roll' and 'outs'. (b) Through tokin: request 2 continues request 1 and request 3 continues request 2, each beginning with the ids of the one it continues exactly as sampled. Request 4 edits request 2's new message, so it branches off at request 1, keeping request 1's ids. Requests 3 and 4 are the leaves of the session's tree, each a rollout.">
+<img src="images/prefix-tree-light.svg" alt="(a) Through text: request A samples ' rollout' and 's'; request B re-encodes the same text as ' roll' and 'outs'. (b) Through tokin: request B continues A and request C continues B, each beginning with the ids of the one it continues exactly as sampled. Request D edits B's observation, so it branches off at A, keeping A's ids. C and D are the leaves of the session's tree, each a rollout.">
 <figcaption class="figcaption--numbered"><span class="fig-label">Figure 2.</span> (a) Through text, re-encoding changes the sampled ids. (b) Through tokin, each request extends the one it continues as sampled, and an edit to history branches off where it diverges: a session is a tree whose leaves are rollouts.</figcaption>
 </figure>
 
@@ -62,12 +64,12 @@ The property holds by construction: tokin stores each request's $\Delta_k$ and $
 
 Each sample opens a **session** and hands the harness that session's base URL. From there the harness is an ordinary OpenAI client. For every request, tokin:
 
-1. **attaches** it to its parent $j$ in the session;
-2. **renders** only the messages new since request $j$, encodes them as $\Delta_k$, and sends $x_k = x_j\, y_j\, \Delta_k$;
+1. **attaches** it to its parent in the session, turn $t-1$ of its trajectory;
+2. **renders** only the observation $o_t$, encodes it as $\Delta_t$, and sends $x_t = x_{t-1}\, y_{t-1}\, \Delta_t$;
 3. **generates** on the engine from token ids to token ids, keeping what the trainer needs per position: logprobs, the sampler's top-p support, the experts each token was routed to, the weight version that sampled it;
-4. **parses** the generation back into an assistant message, with its reasoning and tool calls, for the harness.
+4. **parses** $y_t$ into the assistant message $a_t$, with its reasoning and tool calls, for the harness.
 
-A session is a tree, not a list. Harnesses do not only append: pi compacts a long context into a summary and starts over from it, and resends a turn whose output ran out of length. A request that shares no path with any earlier turn starts a new root; one that edits or drops part of the conversation branches off where it diverged, keeping everything sampled before. Each leaf of the tree is one rollout: its token ids, a loss mask over the ids the model sampled, and their logprobs.
+When the harness finishes, the trainer collects the session's tree. A compaction, as pi does to restart from a summary of a long context, is a new root in the same session. Each leaf yields one rollout: its ids, a loss mask over the sampled ones, and what step 3 kept for each position.
 
 <!-- TODO: next section — does tokin change what the agent does? (the TITO A/B on Qwen3.6, 3 harnesses x 2 benchmarks) -->
 
