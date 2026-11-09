@@ -78,12 +78,77 @@ Take the session of Figure 3. The harness first sends the task, $o_0$. Nothing p
 
 When the harness finishes, the trainer collects the session with `GET /sessions/{id}`, one safetensors payload that stores each turn once, however many rollouts share it. Here it holds two rollouts, C and D, sharing $x_0\, y_0$. Each rollout gives `token_ids` ($x_T\, y_T$), a `loss_mask` that is 1 on every $y$ and 0 on every $\Delta$, aligned `logprobs`, and what step 3 kept, when the trainer asked for it: the top-p support, the routed experts, the weight version of each sampled span.
 
-<!-- TODO: Training pi on MiMo — 27B and 35B, Figure 4 (train reward, held-out MiMo, Terminal-Bench 2.1 vs step) -->
+## Training the pi coding agent with tokin
 
-## Appendix A. tokin for evaluation
+We train the pi coding agent, kept as is, on the code tasks of [MiMo-V2.6-RL-oss](https://huggingface.co/datasets/XiaomiMiMo/MiMo-V2.6-RL-oss), holding out 256 for validation.<sup class="margin-marker"><a href="#n-tasks">1</a></sup><span class="margin-note" id="n-tasks"><span class="margin-note__label">Note 1</span>Each task is a <a href="https://github.com/laude-institute/harbor">Harbor</a> task run in an e2b sandbox; the held-out tasks are listed in <code>heldout.txt</code>.</span> The trainer is [slime](https://github.com/THUDM/slime) in fully asynchronous mode, and [`examples/pi_mimo_rl`](https://github.com/open-rollout/tokin/tree/main/examples/pi_mimo_rl) has the recipe to reproduce it.
 
-TITO removes the gap between what the model sampled and what the trainer reads; it is not meant to change what the agent does. As a check, Qwen3.6-35B-A3B ran with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 differs by −0.002 (95% CI [−0.018, +0.015]).
+Each sample is one pi trial on its own tokin session, rewarded by the task's verifier. Since a session is a tree, it can yield several rollouts, one per leaf, as after a compaction; they share the session's **one reward** and count once in the group-mean advantage [<a href="#ref-5">5</a>]. For rollouts that share their common prefix, the sampled tokens only enter the loss once through tokin's xxx flag.
 
+
+<sup class="margin-marker"><a href="#n-shared">2</a></sup><span class="margin-note" id="n-shared"><span class="margin-note__label">Note 2</span>Rollouts of one session share their common prefix, and its sampled tokens enter the loss once, not once per rollout.</span>
+
+The recipe is REINFORCE [<a href="#ref-4">4</a>] with score centering [<a href="#ref-8">8</a>], dynamic sampling [<a href="#ref-6">6</a>] and truncated importance sampling [<a href="#ref-7">7</a>]. We train two models:
+
+| | Qwen3.8-27B | Qwen3.5-35B-A3B |
+|---|---|---|
+| reasoning | medium effort | thinking |
+| batch per step | 8 tasks × 8 trials | 64 tasks × 16 trials |
+| tokens per turn | 8,192 | 8,192 |
+| steps | 290 | xx |
+| routing replay [<a href="#ref-9">9</a>] | — | on |
+
+<!-- DRAFT Figure 4: 35B is partial (training to step 199; tb21 iter_79 rerun pending); 27B adds iter_59/119/209 when scored -->
+<figure>
+<img src="images/training.svg" alt="Three panels against training step for Qwen3.8-27B and Qwen3.5-35B-A3B: train reward with a 10-step trailing mean, held-out MiMo pass@1, and Terminal-Bench 2.1 pass@1, each eval point with a 95% confidence band; step 0 is the base model.">
+<figcaption class="figcaption--numbered"><span class="fig-label">Figure 4.</span> Train reward, a 10-step trailing mean over the raw reward, and held-out pass@1 with 95% CIs; step 0 is the base model.</figcaption>
+</figure>
+
+Both models improve on held-out tasks (Figure 4). We evaluate on the 256 held-out MiMo tasks and on Terminal-Bench 2.1 (89 tasks), 4 samples per task, with pi as the harness and a per-turn limit of 32,768 tokens:<sup class="margin-marker"><a href="#n-cap">3</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 3</span>Training caps a turn at 8,192 tokens. RL lengthens reasoning, and at 8,192 more of the trained model's trials stop on length, which Appendix C shows; evaluation allows 32,768.</span>
+
+| pass@1 | MiMo held-out | Terminal-Bench 2.1 |
+|---|---|---|
+| Qwen3.8-27B | 0.499 → **0.793** (+29.4) | 0.593 → **0.680** (+8.7) |
+| Qwen3.5-35B-A3B | 0.238 → **xx** (+xx) | 0.368 → **xx** (+xx) |
+
+<!-- TODO: one paragraph on the curves once Figure 4 exists: MiMo rises steadily; Terminal-Bench is noisier at 89 tasks; 35B starts lower -->
+
+
+## Appendix
+
+### A. tokin has no measurable effect on evaluation
+
+With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, Qwen3.6-35B-A3B ran with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 differs by −0.002 (95% CI [−0.018, +0.015]).
+
+
+### B. tokin vs strands-sglang
+
+tokin grows out of [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>], an early open-source TITO implementation: a model provider for Strands Agents that calls SGLang's native `/generate` and keeps the rollout's ids as it goes. tokin lifts two of its limits:
+
+- **One framework.** strands-sglang is a model class inside Strands Agents, so only an agent built on it gets TITO. tokin is a server that speaks chat completions, so any harness does (Property 1).
+- **One growing list.** strands-sglang keeps one flat list of ids per episode and extends it with the messages past a count of those already seen. It assumes the history only grows: it does not check earlier messages against what it served, and a trimmed history needs `reset()`, which closes the rollout. tokin matches each history against what it served and keeps a tree, so a retry, an edit or a compaction keeps every sampled id before it (Property 2).
+
+tokin also states each chat template family's increment explicitly and checks it against the real tokenizer, where strands-sglang derives an increment by rendering behind a placeholder prefix and cutting the prefix off.
+
+
+### C. Evaluation settings
+
+Every evaluation runs pi on 4 samples per task and reports pass@1, the mean over samples, against the base model at the same settings. Training caps a turn at 8,192 tokens; at that cap the trained model loses on Terminal-Bench 2.1 to turns cut on length, which a 32,768-token cap removes:
+
+| Qwen3.8-27B, Terminal-Bench 2.1 | turn cap 8,192 | turn cap 32,768 |
+|---|---|---|
+| base | 0.579 | 0.593 |
+| step 160 | 0.514 | 0.643 |
+| difference | −6.5 [−12.1, −0.8] | +5.1 [+0.0, +10.1] |
+| trials stopped on length, base vs step 160 | 76 vs 123 | 16 vs 29 |
+
+All results in the post use the 32,768 cap, with 95% CIs from a paired bootstrap over tasks.
+
+### D. Notes on slime
+
+Two behaviours of slime at [`859938dc`](https://github.com/THUDM/slime/tree/859938dcb2b0791dbae9084a4d9ae91a4f38f3b7) matter for this run:
+
+- `--save-hf` writes only the trained parameters ([`hf_checkpoint_saver.py#L94`](https://github.com/THUDM/slime/blob/859938dcb2b0791dbae9084a4d9ae91a4f38f3b7/slime/backends/megatron_utils/hf_checkpoint_saver.py#L94)), so a Qwen3.8 save lacks the base's `mtp.*` and `model.visual.*` tensors. slime's `tools/convert_torch_dist_to_hf.py` does not read this run's torch_dist saves: it loads `common.pt`, which Megatron now keeps inside the checkpoint, and does not know the native GDN's `in_proj` and `conv1d`, saved as their parts. We serve a save by copying the base's `mtp.*` and `model.visual.*` into the `--save-hf` output.
+- A save waits for every in-flight trial to finish ([`rollout.py#L414-L428`](https://github.com/THUDM/slime/blob/859938dcb2b0791dbae9084a4d9ae91a4f38f3b7/slime/ray/rollout.py#L414-L428)), so it can take up to an agent's time budget.
 
 ## References
 
@@ -91,4 +156,10 @@ TITO removes the gap between what the model sampled and what the trainer reads; 
 <li id="ref-1">[1] <em>No More Retokenization Drift: Returning Token IDs via the OpenAI Compatible API Matters in Agent RL.</em> <a href="https://vllm.ai/blog/2025-10-22-agent-lightning">vLLM blog</a>, 2025.</li>
 <li id="ref-2">[2] Yuan He. <em>Strands-SGLang: Bridging Agent Scaffolding and RL Training.</em> <a href="https://yuanhe.wiki/posts/technical/strands-sglang/">yuanhe.wiki</a>, 2026.</li>
 <li id="ref-3">[3] <em>Agentic RL: Token-In, Token-Out Done Right.</em> <a href="https://huggingface.co/blog/huggingface/tito">Hugging Face blog</a>, 2026.</li>
+<li id="ref-4">[4] Ronald J. Williams. <em>Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning.</em> Machine Learning, 1992.</li>
+<li id="ref-5">[5] Zhihong Shao et al. <em>DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models.</em> <a href="https://arxiv.org/abs/2402.03300">arXiv:2402.03300</a>, 2024.</li>
+<li id="ref-6">[6] Qiying Yu et al. <em>DAPO: An Open-Source LLM Reinforcement Learning System at Scale.</em> <a href="https://arxiv.org/abs/2503.14476">arXiv:2503.14476</a>, 2025.</li>
+<li id="ref-7">[7] Feng Yao et al. <em>On the Rollout-Training Mismatch in Modern RL Systems.</em> <a href="https://openreview.net/forum?id=8MHqvb4lK9">OpenReview</a>; <a href="https://fengyao.notion.site/off-policy-rl">blog</a>, 2025.</li>
+<li id="ref-8">[8] Martin Marek and Max Ryabinin. <em>Score Centering Stabilizes Off-policy Reinforcement Learning.</em> <a href="https://arxiv.org/abs/2609.20807">arXiv:2609.20807</a>, 2026.</li>
+<li id="ref-9">[9] Wenhan Ma et al. <em>Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers.</em> <a href="https://arxiv.org/abs/2510.11370">arXiv:2510.11370</a>, 2025.</li>
 </ul>
