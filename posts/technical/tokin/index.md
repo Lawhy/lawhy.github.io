@@ -18,7 +18,7 @@ comments: true
 
 <div class="post-tldr">
 <span class="post-tldr__label">TL;DR</span>
-<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It handles each rollout in a tree that grows with every request and records every harness event; every prefix in the tree stays token-in, token-out (TITO), so a request that continues from any earlier turn still builds on exactly what was sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL with the pi coding agent kept as is, improving held-out MiMo pass@1 by +xx and +xx points and Terminal-Bench 2.1 by +xx and +xx points, respectively.</p>
+<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It handles each rollout in a tree that grows with every request and records every harness event; every prefix in the tree stays token-in, token-out (TITO), so a request that continues from any earlier turn still builds on exactly what was sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL with the pi coding agent kept as is, improving held-out MiMo pass@1 by +29.8 and +xx points and Terminal-Bench 2.1 by +7.0 and +xx points, respectively.</p>
 </div>
 
 <figure id="figure-1">
@@ -102,13 +102,13 @@ The train reward, the mean reward of each step's trials before dynamic sampling,
 <figcaption class="figcaption--numbered"><span class="fig-label">Figure 4.</span> Train reward, a 10-step trailing mean of the mean reward of each step's trials, before dynamic sampling, and held-out MiMo pass@1 with 95% CIs; step 0 is the base model.</figcaption>
 </figure>
 
-The 256 held-out MiMo tasks also pick the checkpoint, the one with the best pass@1; Terminal-Bench 2.1 (89 tasks) then tests it once, 8 samples per task against MiMo's 4, with pi as the harness and a per-turn limit of 32,768 tokens (<a href="#table-2">Table 2</a>).<sup class="margin-marker"><a href="#n-cap">4</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 4</span>Training caps a turn at 8,192 tokens to keep rollouts fast; evaluation allows 32,768 so the model's reasoning is not cut short. A separate experiment finds that TITO has no significant effect on a frozen model's scores (<a href="#appendix-b">Appendix B</a>).</span>
+The 256 held-out MiMo tasks also pick the checkpoint, the one with the best pass@1; Terminal-Bench 2.1 (89 tasks) then tests it, 4 samples per task as on MiMo, with pi as the harness and a per-turn limit of 32,768 tokens (<a href="#table-2">Table 2</a>).<sup class="margin-marker"><a href="#n-cap">4</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 4</span>Training caps a turn at 8,192 tokens to keep rollouts fast; evaluation allows 32,768 so the model's reasoning is not cut short. A separate experiment finds that TITO has no significant effect on a frozen model's scores (<a href="#appendix-b">Appendix B</a>).</span>
 
 <div class="post-table" id="table-2" markdown="1">
 
 | pass@1 | MiMo held-out | Terminal-Bench 2.1 |
 |---|---|---|
-| Qwen3.8-27B | 0.499 → **xx** (+xx) | 0.593 → **xx** (+xx) |
+| Qwen3.8-27B | 0.499 → **0.797** (+29.8) | 0.593 → **0.663** (+7.0) |
 | Qwen3.5-35B-A3B | 0.238 → **xx** (+xx) | 0.368 → **xx** (+xx) |
 <p class="table-caption"><span class="fig-label">Table 2.</span> pass@1 of the base model and of the checkpoint held-out MiMo selects, with the gain in points.</p>
 
