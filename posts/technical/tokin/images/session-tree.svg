@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 394" width="700" height="394" role="img" aria-label="(a) Through text: request A samples ' rollout' and 's'; request B re-encodes the same text as ' roll' and 'outs'. (b) Through tokin: request B continues A and request C continues B, each beginning with the ids of the one it continues exactly as sampled. Request D edits B's observation, so it branches off at A, keeping A's ids. C and D are the leaves of the session's tree, each a rollout.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 178 700 216" width="700" height="216" role="img" aria-label="A session's tree. Request B continues A and request C continues B, each beginning with the ids of the one it continues exactly as sampled. Request D edits B's observation, so it branches off at A, keeping A's ids. C and D are the leaves, each a rollout.">
 <style>
 .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif; }
 .mono { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; }
@@ -7,11 +7,13 @@
 .panel { fill: #1f2328; font-size: 15px; font-weight: 650; }
 .note { fill: #59636e; font-size: 12.5px; }
 .badtxt { fill: #d1242f; }
-.rend { fill: #eef1f4; stroke: #d1d9e0; stroke-width: 1; } .rend-t { fill: #59636e; }
+.rend { fill: #0a7ea41a; stroke: #0a7ea4; stroke-width: 1.1; } .rend-t { fill: #0a7ea4; }
 .samp { fill: #0a7ea4; } .samp-t { fill: #ffffff; }
-.bad { fill: #d1242f; }
-.edit { fill: #b453091f; stroke: #b45309; stroke-width: 1.2; } .edit-t { fill: #b45309; }
-.edittxt { fill: #b45309; }
+.bad { fill: #d1242f; fill-opacity: 0.45; }
+.strike { fill: none; stroke: #d1242f; stroke-width: 1.8; stroke-linecap: round; }
+.edit { fill: #6236ff0f; stroke: #6236ff; stroke-width: 1.2; } .edit-t { fill: #6236ff; }
+.edittxt { fill: #6236ff; }
+.wordl { font-size: 13px; }
 .chip { fill: #ffffff; font-size: 12.5px; font-weight: 650; }
 .tid { fill: #ffffff; font-size: 11px; opacity: 0.85; }
 .node { fill: #ffffff; stroke: #0a7ea4; stroke-width: 1.6; }
@@ -20,20 +22,7 @@
 .leaf { fill: #0a7ea41a; stroke: #0a7ea4; stroke-width: 1.1; }
 .leaft { fill: #0a7ea4; font-size: 12px; font-weight: 600; }
 </style>
-<rect width="700" height="394" fill="#ffffff"/>
-<text class="sans panel" x="20" y="26">(a) Through text</text>
-<circle class="node" cx="50" cy="62.0" r="10"/><text class="sans nid" x="50" y="66.0" text-anchor="middle">A</text>
-<g><rect class="rend" x="138" y="42" width="90" height="40" rx="6"/><text class="mathl rend-t" x="183.0" y="65.0" text-anchor="middle">x<tspan class="sub" dy="4">0</tspan></text></g>
-<rect class="samp" x="232" y="42" width="92" height="40" rx="6"/><text class="mono chip" x="278.0" y="60.0" text-anchor="middle">␣rollout</text><text class="mono tid" x="278.0" y="74.0" text-anchor="middle">71184</text>
-<rect class="samp" x="328" y="42" width="32" height="40" rx="6"/><text class="mono chip" x="344.0" y="60.0" text-anchor="middle">s</text><text class="mono tid" x="344.0" y="74.0" text-anchor="middle">82</text>
-<circle class="node" cx="50" cy="112.0" r="10"/><text class="sans nid" x="50" y="116.0" text-anchor="middle">B</text>
-<g><rect class="rend" x="138" y="92" width="90" height="40" rx="6"/><text class="mathl rend-t" x="183.0" y="115.0" text-anchor="middle">x<tspan class="sub" dy="4">0</tspan></text></g>
-<rect class="bad" x="232" y="92" width="70" height="40" rx="6"/><text class="mono chip" x="267.0" y="110.0" text-anchor="middle">␣roll</text><text class="mono tid" x="267.0" y="124.0" text-anchor="middle">6502</text>
-<rect class="bad" x="306" y="92" width="54" height="40" rx="6"/><text class="mono chip" x="333.0" y="110.0" text-anchor="middle">outs</text><text class="mono tid" x="333.0" y="124.0" text-anchor="middle">11666</text>
-<g><rect class="rend" x="364" y="92" width="50" height="40" rx="6"/><text class="mathl rend-t" x="389.0" y="115.0" text-anchor="middle"><tspan font-style="normal">Δ</tspan><tspan class="sub" dy="4">1</tspan></text></g>
-<g><rect class="samp" x="418" y="92" width="80" height="40" rx="6"/><text class="mathl samp-t" x="458.0" y="115.0" text-anchor="middle">y<tspan class="sub" dy="4">1</tspan></text></g>
-<text class="sans note badtxt" x="510" y="116.5">same text, other ids</text>
-<text class="sans panel" x="20" y="176">(b) Through tokin</text>
+<rect y="178" width="700" height="216" fill="#ffffff"/>
 <path class="edge" d="M50 217.0 V249.0 H70"/>
 <path class="edge" d="M80 259.0 V291.0 H100"/>
 <path class="edge" d="M50 217.0 V333.0 H70"/>
