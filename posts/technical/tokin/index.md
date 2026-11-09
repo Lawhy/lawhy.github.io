@@ -13,12 +13,14 @@ comments: true
 <ul>
   <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/open-rollout/tokin">open-rollout/tokin</a></li>
   <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/open-rollout/tokin/tree/main/examples/pi_mimo_rl">examples/pi_mimo_rl</a></li>
+  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt=""><a href="https://github.com/open-rollout/tokin/tree/main/examples/harbor_eval">examples/harbor_eval</a></li>
+  <li><img class="favicon" src="https://www.google.com/s2/favicons?domain=pypi.org&sz=32" alt=""><a href="https://pypi.org/project/tokin/">pip install tokin</a></li>
 </ul>
 </aside>
 
 <div class="post-tldr">
 <span class="post-tldr__label">TL;DR</span>
-<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It handles each rollout in a tree that grows with every request and records every harness event; every prefix in the tree stays token-in, token-out (TITO), so a request that continues from any earlier turn still builds on exactly what was sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL with the pi coding agent kept as is, improving held-out MiMo pass@1 by +29.8 and +xx points and Terminal-Bench 2.1 by +7.0 and +xx points, respectively.</p>
+<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It handles each rollout in a tree that grows with every request and records every exchange between the harness and the model; every prefix in the tree stays token-in, token-out (TITO), so a request that continues from any earlier turn still builds on exactly what was sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL-oss with the pi coding agent kept as is, improving held-out MiMo pass@1 by +29.8 and +xx points and Terminal-Bench 2.1 by +7.0 and +xx points, respectively.</p>
 </div>
 
 <figure id="figure-1">
@@ -48,7 +50,7 @@ tokin solves this for **any** harness.<sup class="margin-marker"><a href="#n-str
 $$\text{harness} \xrightarrow{\;h_t\;} \text{tokin} \xrightarrow{\;x_t\;} \text{engine} \xrightarrow{\;y_t\;} \text{tokin} \xrightarrow{\;a_t\;} \text{harness} \xrightarrow{\;h_{t+1}\;} \cdots$$
 </div>
 
-A harness thus needs only a new base URL, and tokin recovers all token state from the history. A request *continues* an earlier one if its history extends that request's history and reply by a non-empty observation, such as tool results, and that reply was not cut at the length limit. Such a request also continues every ancestor of that one, so tokin attaches it to the deepest it continues, the latest on a tie, or makes it a root if there is none. Usually the parent is the latest request, but a retry or an edit to history attaches to an earlier one, so the requests of a session form a tree (<a href="#figure-3">Figure 3</a>). Each path from a root to a leaf is one trajectory, and $t$ counts turns within it:
+A harness thus needs only a new base URL, and tokin recovers all token state from the history. A request *continues* an earlier one if its history extends that request's history and reply by a non-empty observation, such as tool results, and that reply was not cut at the length limit. Such a request also continues every ancestor of that one, so tokin attaches it to the deepest it continues, the latest on a tie, or makes it a root if there is none. Usually the parent is the latest request, but a retry or an edit to history attaches to an earlier one, so the requests of a session form a tree, or several after a compaction (<a href="#figure-3">Figure 3</a>). Each path from a root to a leaf is one trajectory, and $t$ counts turns within it:
 
 $$h_t = h_{t-1}\, a_{t-1}\, o_t, \qquad h_0 = o_0.$$
 
@@ -80,7 +82,7 @@ When the harness finishes, the trainer collects the session with `GET /sessions/
 
 ## Training the pi coding agent with tokin
 
-We train the pi coding agent, kept as is, on the code tasks of [MiMo-V2.6-RL-oss](https://huggingface.co/datasets/XiaomiMiMo/MiMo-V2.6-RL-oss), holding out 256 for validation,<sup class="margin-marker"><a href="#n-tasks">2</a></sup><span class="margin-note" id="n-tasks"><span class="margin-note__label">Note 2</span>Each task is a <a href="https://github.com/harbor-framework/harbor">Harbor</a> task run in an e2b sandbox; the held-out tasks are listed in <code>heldout.txt</code>.</span> with [slime](https://github.com/THUDM/slime) in fully asynchronous mode as the trainer; [`examples/pi_mimo_rl`](https://github.com/open-rollout/tokin/tree/main/examples/pi_mimo_rl) has the recipe to reproduce it. Each sample is one pi trial on its own tokin session, rewarded by the task's verifier. Since a session is a tree, it can yield several rollouts, one per leaf, as after a compaction; they share the session's **one reward** and count once in the group-mean advantage [<a href="#ref-5">5</a>], and where they share a prefix, its sampled tokens are trained only **once**: their loss mask is 1 in one rollout and 0 in the others.<sup class="margin-marker"><a href="#n-shared">3</a></sup><span class="margin-note" id="n-shared"><span class="margin-note__label">Note 3</span>In 400 sessions sampled from the 27B run, 85% have one rollout; 14.5% split at compactions and 0.5% at a turn cut on length; none at a retry.</span> The objective is REINFORCE [<a href="#ref-4">4</a>] with score centering [<a href="#ref-8">8</a>], dynamic sampling [<a href="#ref-6">6</a>] and truncated importance sampling [<a href="#ref-7">7</a>]. We train a dense model, Qwen3.8-27B, and an MoE model, Qwen3.5-35B-A3B, which also replays the sampler's expert routing in training (R3) [<a href="#ref-9">9</a>]; <a href="#table-1">Table 1</a> gives their settings.
+We train the pi coding agent, kept as is, on the code tasks of [MiMo-V2.6-RL-oss](https://huggingface.co/datasets/XiaomiMiMo/MiMo-V2.6-RL-oss), holding out 256 for validation,<sup class="margin-marker"><a href="#n-tasks">2</a></sup><span class="margin-note" id="n-tasks"><span class="margin-note__label">Note 2</span>Each task is a <a href="https://github.com/harbor-framework/harbor">Harbor</a> task run in an e2b sandbox; the held-out tasks are listed in <code>heldout.txt</code>.</span> with [slime](https://github.com/THUDM/slime) in fully asynchronous mode as the trainer; [`examples/pi_mimo_rl`](https://github.com/open-rollout/tokin/tree/main/examples/pi_mimo_rl) has the recipe to reproduce it. Each trial runs pi on its own tokin session and is rewarded by the task's verifier. Since a session holds a tree of requests, or several after a compaction, it can yield several rollouts, one per leaf; they share the session's **one reward** and count once in the group-mean advantage [<a href="#ref-5">5</a>], and where they share a prefix, its sampled tokens are trained only **once**: their loss mask is 1 in one rollout and 0 in the others.<sup class="margin-marker"><a href="#n-shared">3</a></sup><span class="margin-note" id="n-shared"><span class="margin-note__label">Note 3</span>In 400 sessions sampled from the 27B run, 85% have one rollout; 14.5% split at compactions and 0.5% at a turn cut on length; none at a retry.</span> The algorithm is REINFORCE [<a href="#ref-4">4</a>] with truncated importance sampling [<a href="#ref-7">7</a>], score centering [<a href="#ref-8">8</a>] and dynamic sampling [<a href="#ref-6">6</a>]. We train a dense model, Qwen3.8-27B, and an MoE model, Qwen3.5-35B-A3B, which also replays the sampler's expert routing in training (R3) [<a href="#ref-9">9</a>]; <a href="#table-1">Table 1</a> gives their settings.
 
 <div class="post-table" id="table-1" markdown="1">
 
@@ -90,7 +92,10 @@ We train the pi coding agent, kept as is, on the code tasks of [MiMo-V2.6-RL-oss
 | batch per step | 8 tasks × 8 trials | 64 tasks × 16 trials |
 | tokens per turn | 8,192 | 8,192 |
 | steps | 300 | 200 |
-<p class="table-caption"><span class="fig-label">Table 1.</span> Training settings of the two models; the rest of the recipe is shared and in <code>examples/pi_mimo_rl</code>. A trial is one pi run on one task; tokens per turn caps each generation.</p>
+| nodes, 8× H200 each | 3 training + 3 rollout | 3 training + 3 rollout |
+| median time per step | 6.7 min | 39 min |
+| training time | about 34 h | about 131 h |
+<p class="table-caption"><span class="fig-label">Table 1.</span> Training settings of the two models; the rest of the recipe is shared and in <code>examples/pi_mimo_rl</code>. A trial is one pi run on one task; tokens per turn caps each generation. Training time is the median step time times the number of steps, which leaves out time spent waiting for nodes.</p>
 
 </div>
 
