@@ -958,6 +958,17 @@ body {
   text-align: left;
 }
 
+/* A table's numbered caption, below it, styled like a figure's. */
+.post-body .table-caption {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: -0.6rem auto 1.6rem;
+  max-width: 90%;
+  text-align: left;
+}
+
 .post-body .fig-label {
   font-weight: 600;
   color: var(--ink);
