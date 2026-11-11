@@ -1,7 +1,7 @@
 ---
 title: "tokin: Make Any Agent Harness Token‑Native"
 title_html: '<span class="title-tokens"><span>tok</span><span>in</span></span>: Make Any Agent Harness Token‑Native'
-date: 2026-11-07
+date: 2026-11-10
 slug: tokin
 summary: "Harnesses speak text. RL trains on sampled tokens. tokin is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled."
 authors: '<a href="https://www.yuanhe.wiki/">Yuan He</a>'
