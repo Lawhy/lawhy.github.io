@@ -825,6 +825,7 @@ body {
   letter-spacing: -0.012em;
   margin: 0 0 0.5rem;
   font-variation-settings: "opsz" 32;
+  text-wrap: balance;
 }
 
 .post-meta {
@@ -949,6 +950,28 @@ body {
   margin: 0.7rem auto 0;
   max-width: 85%;
   text-align: center;
+}
+
+.post-body figcaption.figcaption--numbered {
+  max-width: 90%;
+  margin-top: 0.8rem;
+  text-align: left;
+}
+
+/* A table's numbered caption, below it, styled like a figure's. */
+.post-body .table-caption {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: -0.6rem auto 1.6rem;
+  max-width: 90%;
+  text-align: left;
+}
+
+.post-body .fig-label {
+  font-weight: 600;
+  color: var(--ink);
 }
 
 .post-body img {
@@ -1763,6 +1786,101 @@ body {
 
 .post-body .post-lede strong {
   font-weight: 600;
+}
+
+/* A title led by such a name stays on one line on wide screens. */
+@media (min-width: 760px) {
+  .post-title:has(.title-tokens) {
+    white-space: nowrap;
+    font-size: 1.7rem;
+  }
+}
+
+/* A project name in a post title, set as two token chips, as tokin's own mark is. */
+.post-title .title-tokens {
+  display: inline-flex;
+  gap: 0.08em;
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  font-size: 0.86em;
+  letter-spacing: -0.02em;
+  vertical-align: 0.04em;
+}
+
+.post-title .title-tokens span {
+  padding: 0.02em 0.22em 0.06em;
+  border-radius: 0.22em;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+}
+
+.post-title .title-tokens span + span {
+  color: var(--accent);
+}
+
+/* TL;DR: an abstract-like summary in a soft card, labelled at its top edge. */
+.post-body .post-tldr {
+  position: relative;
+  margin: 2rem 0 2.5rem;
+  padding: 1.35rem 1.5rem 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ink);
+  font-variation-settings: "opsz" 17;
+}
+
+.post-body .post-tldr__label {
+  position: absolute;
+  top: -0.62rem;
+  left: 1.1rem;
+  padding: 0 0.45rem;
+  background: var(--bg);
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.post-body .post-tldr p {
+  margin: 0;
+}
+
+.post-body .post-tldr p + p {
+  margin-top: 0.7rem;
+}
+
+/* A stated property, numbered like a paper's: label inline, statement in serif. */
+.post-body .post-property {
+  margin: 1.4rem 0;
+  padding: 0.85rem 1.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font-family: var(--serif);
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.post-body .post-property p {
+  margin: 0;
+}
+
+.post-body .post-property__label {
+  font-family: var(--sans);
+  font-size: 0.9em;
+  font-weight: 600;
+  margin-right: 0.35rem;
+}
+
+.post-body .post-property__label em {
+  font-weight: 500;
+  color: var(--muted);
 }
 
 @media (max-width: 1100px) {

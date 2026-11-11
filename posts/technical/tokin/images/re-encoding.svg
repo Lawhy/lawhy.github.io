@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 700 146" width="700" height="146" role="img" aria-label="Request A samples the ids for ' rollout' and 's', 71184 and 82. Request B sends the conversation back as text, and re-encoding turns the same text into ' roll' and 'outs', 6502 and 11666.">
+<style>
+.sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif; }
+.mono { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; }
+.mathl { font-family: 'Times New Roman', 'STIX Two Text', Georgia, serif; font-style: italic; font-size: 16px; }
+.sub { font-size: 11px; font-style: normal; }
+.panel { fill: #1f2328; font-size: 15px; font-weight: 650; }
+.note { fill: #59636e; font-size: 12.5px; }
+.badtxt { fill: #d1242f; }
+.rend { fill: #0a7ea41a; stroke: #0a7ea4; stroke-width: 1.1; } .rend-t { fill: #0a7ea4; }
+.samp { fill: #0a7ea4; } .samp-t { fill: #ffffff; }
+.bad { fill: #d1242f; fill-opacity: 0.45; }
+.strike { fill: none; stroke: #d1242f; stroke-width: 1.8; stroke-linecap: round; }
+.edit { fill: #6236ff0f; stroke: #6236ff; stroke-width: 1.2; } .edit-t { fill: #6236ff; }
+.edittxt { fill: #6236ff; }
+.wordl { font-size: 13px; }
+.chip { fill: #ffffff; font-size: 12.5px; font-weight: 650; }
+.tid { fill: #ffffff; font-size: 11px; opacity: 0.85; }
+.node { fill: #ffffff; stroke: #0a7ea4; stroke-width: 1.6; }
+.nid { fill: #0a7ea4; font-size: 11.5px; font-weight: 700; }
+.edge { fill: none; stroke: #59636e; stroke-width: 1.3; }
+.leaf { fill: #0a7ea41a; stroke: #0a7ea4; stroke-width: 1.1; }
+.leaft { fill: #0a7ea4; font-size: 12px; font-weight: 600; }
+</style>
+<rect y="30" width="700" height="146" fill="#ffffff"/>
+<circle class="node" cx="50" cy="62.0" r="10"/><text class="sans nid" x="50" y="66.0" text-anchor="middle">A</text>
+<rect class="rend" x="138" y="42" width="90" height="40" rx="6"/><text class="sans rend-t wordl" x="183.0" y="66.5" text-anchor="middle">prompt</text>
+<rect class="samp" x="232" y="42" width="92" height="40" rx="6"/><text class="mono chip" x="278.0" y="60.0" text-anchor="middle">␣rollout</text><text class="mono tid" x="278.0" y="74.0" text-anchor="middle">71184</text>
+<rect class="samp" x="328" y="42" width="32" height="40" rx="6"/><text class="mono chip" x="344.0" y="60.0" text-anchor="middle">s</text><text class="mono tid" x="344.0" y="74.0" text-anchor="middle">82</text>
+<circle class="node" cx="50" cy="112.0" r="10"/><text class="sans nid" x="50" y="116.0" text-anchor="middle">B</text>
+<rect class="rend" x="138" y="92" width="90" height="40" rx="6"/><text class="sans rend-t wordl" x="183.0" y="116.5" text-anchor="middle">prompt</text>
+<rect class="bad" x="232" y="92" width="70" height="40" rx="6"/><text class="mono chip" x="267.0" y="110.0" text-anchor="middle">␣roll</text><text class="mono tid" x="267.0" y="124.0" text-anchor="middle">6502</text><path class="strike" d="M237 115.0 H297"/>
+<rect class="bad" x="306" y="92" width="54" height="40" rx="6"/><text class="mono chip" x="333.0" y="110.0" text-anchor="middle">outs</text><text class="mono tid" x="333.0" y="124.0" text-anchor="middle">11666</text><path class="strike" d="M311 115.0 H355"/>
+<rect class="rend" x="364" y="92" width="90" height="40" rx="6"/><text class="sans rend-t wordl" x="409.0" y="116.5" text-anchor="middle">tool result</text>
+<rect class="samp" x="458" y="92" width="80" height="40" rx="6"/><text class="sans samp-t wordl" x="498.0" y="116.5" text-anchor="middle">reply</text>
+<text class="sans note badtxt" x="550" y="116.5">same text, other ids</text>
+<rect class="rend" x="138" y="149" width="22" height="14" rx="4"/><text class="sans note" x="168" y="160">rendered</text>
+<rect class="samp" x="244.8" y="149" width="22" height="14" rx="4"/><text class="sans note" x="274.8" y="160">sampled</text>
+<rect class="bad" x="345.0" y="149" width="22" height="14" rx="4"/><text class="sans note" x="375.0" y="160">re-encoded</text>
+</svg>
