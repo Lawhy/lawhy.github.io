@@ -170,4 +170,4 @@ Several open projects also record the token ids of an agent's turns. <a href="#t
 
 ### B. tokin has no measurable effect on evaluation {#appendix-b}
 
-With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, we ran Qwen3.6-35B-A3B with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 differs by −0.002 (95% CI [−0.018, +0.015]).
+With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, we ran Qwen3.6-35B-A3B with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 through tokin minus re-rendering is +0.001 (95% CI [−0.015, +0.017]).

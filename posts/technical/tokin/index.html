@@ -263,7 +263,7 @@ $$x_t = x_{t-1}\, y_{t-1}\, \Delta_t, \qquad x_0 = \Delta_0,$$
 <li><strong>Any trainer.</strong> Agent Lightning ships only verl, though it exports each call&rsquo;s ids over REST. Miles launches its session server from its own training arguments and trains on its samples, though the server exports them over HTTP.</li>
 </ul>
 <h3 id="appendix-b">B. tokin has no measurable effect on evaluation</h3>
-<p>With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, we ran Qwen3.6-35B-A3B with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 differs by −0.002 (95% CI [−0.018, +0.015]).</p>
+<p>With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, we ran Qwen3.6-35B-A3B with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 through tokin minus re-rendering is +0.001 (95% CI [−0.015, +0.017]).</p>
         </div>
         <section class="post-comments" aria-label="Comments">
           <h2 class="post-comments__title">Discussion</h2>
