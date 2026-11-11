@@ -1071,6 +1071,25 @@ body {
   vertical-align: top;
 }
 
+/* Comparison matrix: a label column, equal columns of marks. */
+.post-table--matrix table {
+  table-layout: fixed;
+}
+
+.post-table--matrix th:first-child,
+.post-table--matrix td:first-child {
+  width: 32%;
+}
+
+.post-table--matrix td:not(:first-child) {
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.post-table--matrix td:last-child {
+  color: var(--accent);
+}
+
 /* Math inside table cells: shrink so equations fit in narrow columns
    without mid-equation line wraps. */
 .post-body table .katex {

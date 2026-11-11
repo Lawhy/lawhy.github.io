@@ -43,7 +43,7 @@ A harness, though, speaks text, and RL trains on tokens.<sup class="margin-marke
 
 ## A gateway with two properties
 
-tokin solves this for **any** harness.<sup class="margin-marker"><a href="#n-strands">2</a></sup><span class="margin-note" id="n-strands"><span class="margin-note__label">Note 2</span>Its predecessor strands-sglang [<a href="#ref-2">2</a>] solves it only inside one agent framework, and only while the history grows; <a href="#appendix-a">Appendix A</a> compares them, and tokin with Agent Lightning [<a href="#ref-1">1</a>].</span> It is a gateway between harnesses and the inference engine (<a href="#figure-1">Figure 1</a>), and it guarantees two properties. For the request at turn $t$ of a trajectory (defined below), write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; $a_t$ for the assistant message tokin parses from them; and $o_t$ for the observation the request adds, such as tool results, or the task at $t = 0$. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.
+tokin solves this for **any** harness.<sup class="margin-marker"><a href="#n-strands">2</a></sup><span class="margin-note" id="n-strands"><span class="margin-note__label">Note 2</span>Its predecessor strands-sglang [<a href="#ref-2">2</a>] solves it only inside one agent framework, and only while the history grows; <a href="#appendix-a">Appendix A</a> compares tokin with it and other related projects.</span> It is a gateway between harnesses and the inference engine (<a href="#figure-1">Figure 1</a>), and it guarantees two properties. For the request at turn $t$ of a trajectory (defined below), write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; $a_t$ for the assistant message tokin parses from them; and $o_t$ for the observation the request adds, such as tool results, or the task at $t = 0$. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.
 
 <div class="post-property">
 <p><span class="post-property__label">Property 1 <em>(messages only)</em></span> A harness sees only messages ($h_t$, $a_t$); the token ids stay between tokin and the engine:</p>
@@ -105,7 +105,7 @@ The train reward rises for both models (<a href="#figure-4">Figure 4</a>, left):
 <figcaption class="figcaption--numbered"><span class="fig-label">Figure 4.</span> Left: train reward per step (faint), the mean reward of the step’s trials before dynamic sampling, with its 10-step trailing mean. Right: held-out MiMo pass@1 with 95% CIs. Step 0 is the base model.</figcaption>
 </figure>
 
-We report each run's last checkpoint. Held-out MiMo measures generalization to unseen tasks from the training distribution; Terminal-Bench 2.1 (89 tasks) measures transfer beyond it. Both evaluations run pi with 4 samples per task and a per-turn limit of 32,768 tokens (<a href="#table-2">Table 2</a>).<sup class="margin-marker"><a href="#n-cap">5</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 5</span>Training caps a turn at 8,192 tokens to keep rollouts fast; evaluation allows 32,768 so the model's reasoning is not cut short. A separate experiment finds that TITO has no significant effect on a frozen model's scores (<a href="#appendix-b">Appendix B</a>).</span>
+We report each run's last checkpoint. Held-out MiMo measures generalization to unseen tasks from the training distribution; Terminal-Bench 2.1 (89 tasks) measures transfer beyond it. Both evaluations run pi with 4 samples per task and a per-turn limit of 32,768 tokens (<a href="#table-2">Table 2</a>).<sup class="margin-marker"><a href="#n-cap">5</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 5</span>Training caps a turn at 8,192 tokens to keep rollouts fast; evaluation allows 32,768 so the model's reasoning is not cut short.</span>
 
 <div class="post-table" id="table-2" markdown="1">
 
@@ -143,25 +143,31 @@ Community feedback is highly appreciated, and contributions are welcome, from a 
 <li id="ref-9">[9] Martin Marek and Max Ryabinin. <em>Score Centering Stabilizes Off-policy Reinforcement Learning.</em> <a href="https://arxiv.org/abs/2609.20807">arXiv:2609.20807</a>, 2026.</li>
 <li id="ref-10">[10] Qiying Yu et al. <em>DAPO: An Open-Source LLM Reinforcement Learning System at Scale.</em> <a href="https://arxiv.org/abs/2503.14476">arXiv:2503.14476</a>, 2025.</li>
 <li id="ref-11">[11] Wenhan Ma et al. <em>Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers.</em> <a href="https://arxiv.org/abs/2510.11370">arXiv:2510.11370</a>, 2025.</li>
+<li id="ref-12">[12] Zhiyuan He et al. <em>Agent Lightning v1.0: Towards Harnessed Agentic RL.</em> <a href="https://arxiv.org/abs/2608.17528">arXiv:2608.17528</a>, 2026.</li>
 </ul>
 
 ## Appendix
 
-### A. tokin vs strands-sglang and Agent Lightning {#appendix-a}
+### A. tokin compared with related projects {#appendix-a}
 
-tokin grows out of [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>], an early open-source TITO implementation: a model provider for Strands Agents that calls SGLang's native `/generate` and keeps the rollout's ids as it goes. tokin lifts two of its limits:
+Several open projects also record the token ids of an agent's turns. <a href="#table-3">Table 3</a> compares tokin with three of them: [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>], from which tokin grew, [Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>] and [Miles](https://github.com/radixark/miles) [<a href="#ref-4">4</a>].<sup class="margin-marker"><a href="#n-related">6</a></sup><span class="margin-note" id="n-related"><span class="margin-note__label">Note 6</span>Read at strands-sglang <a href="https://github.com/open-rollout/strands-sglang/tree/dda03af">dda03af</a> (2026-11-01), Agent Lightning <a href="https://github.com/microsoft/agent-lightning/tree/bc3a9e8">bc3a9e8</a> (2026-11-04) and Miles <a href="https://github.com/radixark/miles/tree/2f627e0">2f627e0</a> (2026-11-10).</span>
 
-- **One framework.** strands-sglang is a model class inside Strands Agents, so only an agent built on it gets TITO. tokin is a server that speaks chat completions, so any harness does (Property 1).
-- **One growing list.** strands-sglang keeps one flat list of ids per episode and extends it with the messages past a count of those already seen. It assumes the history only grows: it does not check earlier messages against what it served, and a trimmed history needs `reset()`, which closes the rollout. tokin matches each history against what it served and keeps a tree, so a retry, an edit or a compaction keeps every sampled id before it (Property 2).
+<div class="post-table post-table--matrix" id="table-3" markdown="1">
 
-Both render each $\Delta_t$ behind a placeholder history and cut the placeholder off. tokin also states each chat template family's facts, such as its turn end and stop tokens, and checks on the real tokenizer that $\Delta_t$'s ids are exactly what the full render adds after the reply's stop token.
+| | strands-sglang | Agent Lightning | Miles | tokin |
+|---|:-:|:-:|:-:|:-:|
+| any harness | ○ | ● | ● | ● |
+| TITO at every prefix | ◐ | ○ | ● | ● |
+| tree of turns | ○ | ○ | ◐ | ● |
+| any trainer | ● | ◐ | ◐ | ● |
+<p class="table-caption"><span class="fig-label">Table 3.</span> tokin and related projects: ● yes, ◐ in part, ○ no.</p>
+</div>
 
-[Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>] also puts a gateway in front of the engine, but it forwards the messages to vLLM, which renders them, and records each call's prompt ids and sampled ids. Its trainer then joins a trajectory's calls into one sample while each call's prompt ids begin with the previous call's prompt and reply, and starts a new sample where they do not. Every sample is thus consistent with what the engine saw, but:
-
-- **Prefixes by coincidence.** A later call keeps the sampled ids only if vLLM's re-encoding reproduces them, so a re-tokenized reply, a re-serialized tool call or a template that drops past reasoning splits the trajectory. tokin renders only $\Delta_t$ after the sampled ids, so the trajectory stays one rollout (Property 2).
-- **One line.** Each call is compared only with the one before it, so a history that does not extend it, after an edit or a compaction, starts a sample that shares nothing with the earlier ones. tokin attaches each request to its place in the session's tree.
-- **One stack.** Agent Lightning trains with verl on vLLM; tokin hands its rollouts to any trainer.
+- **Any harness.** strands-sglang serves only agents built on Strands Agents; the other three serve harnesses over HTTP.
+- **TITO at every prefix.** strands-sglang holds it only while the history grows. Agent Lightning has vLLM re-render each chat request and joins calls into one sample only where the ids happen to match; only an agent that tokenizes for itself and sends ids to `/v1/completions` keeps them.<sup class="margin-marker"><a href="#n-agl">7</a></sup><span class="margin-note" id="n-agl"><span class="margin-note__label">Note 7</span>This is by design [<a href="#ref-12">12</a>]: Agent Lightning trains each reply on the prompt a plain deployment would render. tokin instead samples each reply that continues an earlier one from the stitched ids, the earlier prompt and reply with the new messages appended, and <a href="#appendix-b">Appendix B</a> finds no measurable effect of that on evaluation.</span>
+- **Tree of turns.** When the harness retries a turn, Agent Lightning keeps only the last attempt, and when it edits or compacts its history, Agent Lightning starts a new sample. strands-sglang raises on a shorter history and, after an edit, still sends the old ids. Miles keeps a tree in its experimental v2.
+- **Any trainer.** Agent Lightning ships only verl, though it exports each call's ids over REST. Miles launches its session server from its own training arguments and trains on its samples, though the server exports them over HTTP.
 
 ### B. tokin has no measurable effect on evaluation {#appendix-b}
 
-With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, Qwen3.6-35B-A3B ran with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 differs by −0.002 (95% CI [−0.018, +0.015]).
+With tokin, later turns see the sampled ids rather than their re-encoding. To check whether that changes evaluation with the policy frozen, we ran Qwen3.6-35B-A3B with mini-swe-agent, opencode and pi on Terminal-Bench 2.1 (89 tasks × 4 samples) and SWE-bench Verified (500 tasks × 1 sample), once through tokin and once through the same gateway re-rendering every turn from text. Over the 2,568 paired samples, pass@1 differs by −0.002 (95% CI [−0.018, +0.015]).
