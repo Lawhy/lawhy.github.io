@@ -150,21 +150,21 @@ Community feedback is highly appreciated, and contributions are welcome, from a 
 
 ### A. tokin compared with related projects {#appendix-a}
 
-Several open projects also record the token ids of an agent's turns. <a href="#table-3">Table 3</a> compares tokin with three of them: [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>], from which tokin grew, [Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>] and [Miles](https://github.com/radixark/miles) [<a href="#ref-4">4</a>].<sup class="margin-marker"><a href="#n-related">6</a></sup><span class="margin-note" id="n-related"><span class="margin-note__label">Note 6</span>Read at strands-sglang <a href="https://github.com/open-rollout/strands-sglang/tree/dda03af">dda03af</a> (2026-11-01), Agent Lightning <a href="https://github.com/microsoft/agent-lightning/tree/bc3a9e8">bc3a9e8</a> (2026-11-04) and Miles <a href="https://github.com/radixark/miles/tree/2f627e0">2f627e0</a> (2026-11-10).</span>
+Several open projects also record the token ids of an agent's turns. <a href="#table-3">Table 3</a> compares tokin with three of them: [Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>], [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>], from which tokin grew, and [Miles](https://github.com/radixark/miles) [<a href="#ref-4">4</a>].<sup class="margin-marker"><a href="#n-related">6</a></sup><span class="margin-note" id="n-related"><span class="margin-note__label">Note 6</span>Read at Agent Lightning <a href="https://github.com/microsoft/agent-lightning/tree/bc3a9e8">bc3a9e8</a> (2026-11-04), strands-sglang <a href="https://github.com/open-rollout/strands-sglang/tree/dda03af">dda03af</a> (2026-11-01) and Miles <a href="https://github.com/radixark/miles/tree/2f627e0">2f627e0</a> (2026-11-10).</span>
 
 <div class="post-table post-table--matrix" id="table-3" markdown="1">
 
-| | strands-sglang | Agent Lightning | Miles | tokin |
+| | Agent Lightning | strands-sglang | Miles | tokin |
 |---|:-:|:-:|:-:|:-:|
-| any harness | ○ | ● | ● | ● |
-| TITO at every prefix | ◐ | ○ | ● | ● |
+| any harness | ● | ○ | ● | ● |
+| TITO at every prefix | ○ | ◐ | ● | ● |
 | tree of turns | ○ | ○ | ◐ | ● |
-| any trainer | ● | ◐ | ◐ | ● |
+| any trainer | ◐ | ● | ◐ | ● |
 <p class="table-caption"><span class="fig-label">Table 3.</span> tokin and related projects: ● yes, ◐ in part, ○ no.</p>
 </div>
 
 - **Any harness.** strands-sglang serves only agents built on Strands Agents; the other three serve harnesses over HTTP.
-- **TITO at every prefix.** strands-sglang holds it only while the history grows. Agent Lightning has vLLM re-render each chat request and joins calls into one sample only where the ids happen to match; only an agent that tokenizes for itself and sends ids to `/v1/completions` keeps the sampled ids.<sup class="margin-marker"><a href="#n-agl">7</a></sup><span class="margin-note" id="n-agl"><span class="margin-note__label">Note 7</span>This is by design [<a href="#ref-12">12</a>]: Agent Lightning trains each reply on the prompt a plain deployment would render. tokin instead samples each reply that continues an earlier one from the stitched ids, the earlier prompt and reply with the new messages appended, and <a href="#appendix-b">Appendix B</a> finds no measurable effect of that on evaluation.</span>
+- **TITO at every prefix.** Agent Lightning has vLLM re-render each chat request and joins calls into one sample only where the ids happen to match; only an agent that tokenizes for itself and sends ids to `/v1/completions` keeps the sampled ids.<sup class="margin-marker"><a href="#n-agl">7</a></sup><span class="margin-note" id="n-agl"><span class="margin-note__label">Note 7</span>This is by design [<a href="#ref-12">12</a>]: Agent Lightning trains each reply on the prompt a plain deployment would render. tokin instead samples each reply that continues an earlier one from the stitched ids, the earlier prompt and reply with the new messages appended, and <a href="#appendix-b">Appendix B</a> finds no measurable effect of that on evaluation.</span> strands-sglang holds it only while the history grows.
 - **Tree of turns.** When the harness retries a turn, Agent Lightning keeps only the last attempt; when the harness edits or compacts its history, Agent Lightning starts a new sample. strands-sglang raises on a shorter history and, after an edit, still sends the old ids. Miles keeps a tree in its experimental v2.
 - **Any trainer.** Agent Lightning ships only verl, though it exports each call's ids over REST. Miles launches its session server from its own training arguments and trains on its samples, though the server exports them over HTTP.
 
