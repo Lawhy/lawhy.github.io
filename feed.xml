@@ -12,7 +12,7 @@
       <link>https://yuanhe.wiki/posts/technical/tokin/</link>
       <guid>https://yuanhe.wiki/posts/technical/tokin/</guid>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <description><![CDATA[A gateway that makes any agent harness token-native, and coding-agent RL with pi through it.]]></description>
+      <description><![CDATA[Harnesses speak text. RL trains on sampled tokens. tokin is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled.]]></description>
     </item>
     <item>
       <title>Open Source for LLM Post-Training: What Can We Build?</title>
