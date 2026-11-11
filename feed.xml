@@ -6,13 +6,13 @@
     <description>Personal site of Yuan He.</description>
     <language>en</language>
     <atom:link href="https://yuanhe.wiki/feed.xml" rel="self" type="application/rss+xml" />
-    <lastBuildDate>Mon, 09 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 10 Nov 2026 00:00:00 GMT</lastBuildDate>
     <item>
       <title>tokin: Make Any Agent Harness Token‑Native</title>
       <link>https://yuanhe.wiki/posts/technical/tokin/</link>
       <guid>https://yuanhe.wiki/posts/technical/tokin/</guid>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <description><![CDATA[A gateway that makes any agent harness token-native, and coding-agent RL with pi kept as is.]]></description>
+      <description><![CDATA[A gateway that makes any agent harness token-native, and coding-agent RL with pi through it.]]></description>
     </item>
     <item>
       <title>Open Source for LLM Post-Training: What Can We Build?</title>
