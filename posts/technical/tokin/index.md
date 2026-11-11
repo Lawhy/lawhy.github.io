@@ -43,7 +43,7 @@ A harness, though, speaks text, and RL trains on tokens.<sup class="margin-marke
 
 ## A gateway with two properties
 
-tokin solves this for **any** harness.<sup class="margin-marker"><a href="#n-strands">2</a></sup><span class="margin-note" id="n-strands"><span class="margin-note__label">Note 2</span>Its predecessor strands-sglang [<a href="#ref-2">2</a>] solves it only inside one agent framework, and only while the history grows; <a href="#appendix-a">Appendix A</a> compares them.</span> It is a gateway between harnesses and the inference engine (<a href="#figure-1">Figure 1</a>), and it guarantees two properties. For the request at turn $t$ of a trajectory (defined below), write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; $a_t$ for the assistant message tokin parses from them; and $o_t$ for the observation the request adds, such as tool results, or the task at $t = 0$. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.
+tokin solves this for **any** harness.<sup class="margin-marker"><a href="#n-strands">2</a></sup><span class="margin-note" id="n-strands"><span class="margin-note__label">Note 2</span>Its predecessor strands-sglang [<a href="#ref-2">2</a>] solves it only inside one agent framework, and only while the history grows; <a href="#appendix-a">Appendix A</a> compares them, and tokin with Agent Lightning [<a href="#ref-1">1</a>].</span> It is a gateway between harnesses and the inference engine (<a href="#figure-1">Figure 1</a>), and it guarantees two properties. For the request at turn $t$ of a trajectory (defined below), write $h_t$ for the history the harness sends, a list of messages; $x_t$ for the prompt ids tokin sends the engine; $y_t$ for the token ids the model samples back; $a_t$ for the assistant message tokin parses from them; and $o_t$ for the observation the request adds, such as tool results, or the task at $t = 0$. Juxtaposition concatenates sequences, ids and messages alike, e.g., $x_t\, y_t$ is $x_t$ followed by $y_t$.
 
 <div class="post-property">
 <p><span class="post-property__label">Property 1 <em>(messages only)</em></span> A harness sees only messages ($h_t$, $a_t$); the token ids stay between tokin and the engine:</p>
@@ -147,7 +147,7 @@ Community feedback is highly appreciated, and contributions are welcome, from a 
 
 ## Appendix
 
-### A. tokin vs strands-sglang {#appendix-a}
+### A. tokin vs strands-sglang and Agent Lightning {#appendix-a}
 
 tokin grows out of [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>], an early open-source TITO implementation: a model provider for Strands Agents that calls SGLang's native `/generate` and keeps the rollout's ids as it goes. tokin lifts two of its limits:
 
@@ -155,6 +155,12 @@ tokin grows out of [strands-sglang](https://github.com/open-rollout/strands-sgla
 - **One growing list.** strands-sglang keeps one flat list of ids per episode and extends it with the messages past a count of those already seen. It assumes the history only grows: it does not check earlier messages against what it served, and a trimmed history needs `reset()`, which closes the rollout. tokin matches each history against what it served and keeps a tree, so a retry, an edit or a compaction keeps every sampled id before it (Property 2).
 
 Both render each $\Delta_t$ behind a placeholder history and cut the placeholder off. tokin also states each chat template family's facts, such as its turn end and stop tokens, and checks on the real tokenizer that $\Delta_t$'s ids are exactly what the full render adds after the reply's stop token.
+
+[Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>] also puts a gateway in front of the engine, but it forwards the messages to vLLM, which renders them, and records each call's prompt ids and sampled ids. Its trainer then joins a trajectory's calls into one sample while each call's prompt ids begin with the previous call's prompt and reply, and starts a new sample where they do not. Every sample is thus consistent with what the engine saw, but:
+
+- **Prefixes by coincidence.** A later call keeps the sampled ids only if vLLM's re-encoding reproduces them, so a re-tokenized reply, a re-serialized tool call or a template that drops past reasoning splits the trajectory. tokin renders only $\Delta_t$ after the sampled ids, so the trajectory stays one rollout (Property 2).
+- **One line.** Each call is compared only with the one before it, so a history that does not extend it, after an edit or a compaction, starts a sample that shares nothing with the earlier ones. tokin attaches each request to its place in the session's tree.
+- **One stack.** Agent Lightning trains with verl on vLLM; tokin hands its rollouts to any trainer.
 
 ### B. tokin has no measurable effect on evaluation {#appendix-b}
 
