@@ -20,7 +20,7 @@ comments: true
 
 <div class="post-tldr">
 <span class="post-tldr__label">TL;DR</span>
-<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It keeps each session as a tree of the turns it served, and every path in the tree is token-in, token-out (TITO) at every prefix: a request that continues any earlier turn builds on exactly the ids that turn sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL-oss with the pi coding agent, for improvements of +29.8 and +13.5 points on held-out MiMo pass@1 and +7.0 and +5.1 on Terminal-Bench 2.1, respectively.</p>
+<p>Harnesses speak text. RL trains on sampled tokens. <strong>tokin</strong> is a gateway that makes any agent harness token-native: sitting between the harness and the inference engine, it ensures the model trains on exactly the tokens it sampled. It keeps each session as a tree of the turns it served, and every path in the tree is token-in, token-out (TITO) at every prefix: a request that continues any earlier turn builds on exactly the ids that turn sampled. With tokin and slime, we train Qwen3.8-27B and Qwen3.5-35B-A3B on MiMo-V2.6-RL-oss with the pi coding agent, for improvements of +29.8 and +14.4 points on held-out MiMo pass@1 and +7.0 and +11.2 on Terminal-Bench 2.1, respectively.</p>
 </div>
 
 <figure id="figure-1">
@@ -91,28 +91,28 @@ We train the [pi](https://pi.dev) coding agent on the code tasks of [MiMo-V2.6-R
 | reasoning | medium effort | thinking |
 | batch per step | 8 tasks × 8 trials | 64 tasks × 16 trials |
 | tokens per turn | 8,192 | 8,192 |
-| steps | 300 (~1.0 epoch) | 140 (~3.7 epochs) |
+| steps | 300 (~1.0 epoch) | 200 (~5.2 epochs) |
 | nodes, 8× H200 each | 3 training + 3 rollout | 3 training + 3 rollout |
-| time per step | ~7 min | ~41 min |
+| time per step | ~7 min | ~44 min |
 <p class="table-caption"><span class="fig-label">Table 1.</span> Training settings of the two models. The algorithm and the hyperparameters not listed are shared; parallelism and serving settings differ, and each launcher in <code>examples/pi_mimo_rl</code> holds them all. A trial is one pi run on one task; tokens per turn caps each generation. Epochs count the groups dynamic sampling keeps, against the 2,442 training tasks. Time per step is the median over training.</p>
 
 </div>
 
-The train reward rises for both models (<a href="#figure-4">Figure 4</a>, left): from about 0.5 to 0.8 over Qwen3.8-27B's 300 steps, and from about 0.27 to 0.40 over Qwen3.5-35B-A3B's 140. Held-out MiMo pass@1, evaluated every 60 steps and every 10 near the end, rises with it, from 0.50 to 0.80 for the 27B model and from 0.24 to 0.37 for the 35B.
+The train reward rises for both models (<a href="#figure-4">Figure 4</a>, left): from about 0.5 to 0.8 over Qwen3.8-27B's 300 steps, and from about 0.27 to 0.41 over Qwen3.5-35B-A3B's 200. Held-out MiMo pass@1, evaluated every 60 steps and every 10 near the end, rises with it, from 0.50 to 0.80 for the 27B model and from 0.24 to 0.38 for the 35B.
 
 <figure id="figure-4">
 <img src="images/training.svg" alt="Two panels against training step for Qwen3.8-27B and Qwen3.5-35B-A3B: train reward before dynamic sampling with a 10-step trailing mean, and held-out MiMo pass@1 with a 95% confidence band; step 0 is the base model.">
 <figcaption class="figcaption--numbered"><span class="fig-label">Figure 4.</span> Left: train reward per step (faint), the mean reward of the step’s trials before dynamic sampling, with its 10-step trailing mean. Right: held-out MiMo pass@1 with 95% CIs. Step 0 is the base model.</figcaption>
 </figure>
 
-We report each run's last checkpoint (<a href="#table-2">Table 2</a>). Held-out MiMo measures generalization to unseen tasks from the training distribution; Terminal-Bench 2.1 (89 tasks) measures transfer beyond it. Both evaluations run pi with 4 samples per task and a per-turn limit of 32,768 tokens.<sup class="margin-marker"><a href="#n-cap">5</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 5</span>Training caps a turn at 8,192 tokens to keep rollouts fast; evaluation allows 32,768 so the model's reasoning is not cut short.</span>
+We report each run's last checkpoint (<a href="#table-2">Table 2</a>).<sup class="margin-marker"><a href="#n-update">6</a></sup><span class="margin-note" id="n-update"><span class="margin-note__label">Note 6</span>Updated 2026-11-14: the 35B now reports step 200 (step 140 gave +13.5 and +5.1).</span> Held-out MiMo measures generalization to unseen tasks from the training distribution; Terminal-Bench 2.1 (89 tasks) measures transfer beyond it. Both evaluations run pi with 4 samples per task and a per-turn limit of 32,768 tokens.<sup class="margin-marker"><a href="#n-cap">5</a></sup><span class="margin-note" id="n-cap"><span class="margin-note__label">Note 5</span>Training caps a turn at 8,192 tokens to keep rollouts fast; evaluation allows 32,768 so the model's reasoning is not cut short.</span>
 
 <div class="post-table" id="table-2" markdown="1">
 
 | pass@1 | held-out MiMo | Terminal-Bench 2.1 |
 |---|---|---|
 | Qwen3.8-27B | 0.499 → **0.797** (+29.8) | 0.593 → **0.663** (+7.0) |
-| Qwen3.5-35B-A3B | 0.238 → **0.373** (+13.5) | 0.368 → **0.419** (+5.1) |
+| Qwen3.5-35B-A3B | 0.238 → **0.382** (+14.4) | 0.368 → **0.480** (+11.2) |
 <p class="table-caption"><span class="fig-label">Table 2.</span> pass@1 of the base model and of each run’s last checkpoint, with the gain in points.</p>
 
 </div>
@@ -150,7 +150,7 @@ Community feedback is highly appreciated, and contributions are welcome, from a 
 
 ### A. tokin compared with related projects {#appendix-a}
 
-Several open projects also record the token ids of an agent's turns. <a href="#table-3">Table 3</a> compares tokin with three of them: [Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>], [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>] and [Miles](https://github.com/radixark/miles) [<a href="#ref-4">4</a>].<sup class="margin-marker"><a href="#n-related">6</a></sup><span class="margin-note" id="n-related"><span class="margin-note__label">Note 6</span>Read at Agent Lightning <a href="https://github.com/microsoft/agent-lightning/tree/bc3a9e8">bc3a9e8</a>, strands-sglang <a href="https://github.com/open-rollout/strands-sglang/tree/dda03af">dda03af</a> and Miles <a href="https://github.com/radixark/miles/tree/2f627e0">2f627e0</a>.</span>
+Several open projects also record the token ids of an agent's turns. <a href="#table-3">Table 3</a> compares tokin with three of them: [Agent Lightning](https://github.com/microsoft/agent-lightning) [<a href="#ref-1">1</a>], [strands-sglang](https://github.com/open-rollout/strands-sglang) [<a href="#ref-2">2</a>] and [Miles](https://github.com/radixark/miles) [<a href="#ref-4">4</a>].<sup class="margin-marker"><a href="#n-related">7</a></sup><span class="margin-note" id="n-related"><span class="margin-note__label">Note 7</span>Read at Agent Lightning <a href="https://github.com/microsoft/agent-lightning/tree/bc3a9e8">bc3a9e8</a>, strands-sglang <a href="https://github.com/open-rollout/strands-sglang/tree/dda03af">dda03af</a> and Miles <a href="https://github.com/radixark/miles/tree/2f627e0">2f627e0</a>.</span>
 
 <div class="post-table post-table--matrix" id="table-3" markdown="1">
 
@@ -164,7 +164,7 @@ Several open projects also record the token ids of an agent's turns. <a href="#t
 </div>
 
 - **Any harness.** strands-sglang serves only agents built on Strands Agents; the other three serve harnesses over HTTP.
-- **TITO at every prefix.** Agent Lightning has vLLM re-render each chat request and joins calls into one sample only where the ids happen to match; only an agent that tokenizes for itself and sends ids to `/v1/completions` keeps the sampled ids.<sup class="margin-marker"><a href="#n-agl">7</a></sup><span class="margin-note" id="n-agl"><span class="margin-note__label">Note 7</span>By design [<a href="#ref-12">12</a>], Agent Lightning matches a plain deployment, so it starts a new sample wherever TITO breaks. tokin keeps TITO throughout, and <a href="#appendix-b">Appendix B</a> finds that doing so has no measurable effect on eval.</span> strands-sglang holds TITO only while the history grows, and Miles at any earlier prefix only in its experimental v2.
+- **TITO at every prefix.** Agent Lightning has vLLM re-render each chat request and joins calls into one sample only where the ids happen to match; only an agent that tokenizes for itself and sends ids to `/v1/completions` keeps the sampled ids.<sup class="margin-marker"><a href="#n-agl">8</a></sup><span class="margin-note" id="n-agl"><span class="margin-note__label">Note 8</span>By design [<a href="#ref-12">12</a>], Agent Lightning matches a plain deployment, so it starts a new sample wherever TITO breaks. tokin keeps TITO throughout, and <a href="#appendix-b">Appendix B</a> finds that doing so has no measurable effect on eval.</span> strands-sglang holds TITO only while the history grows, and Miles at any earlier prefix only in its experimental v2.
 - **Tree of turns.** When the harness retries a turn, Agent Lightning keeps only the last attempt; when the harness edits or compacts its history, Agent Lightning starts a new sample. strands-sglang raises on a shorter history and, after an edit, still sends the old ids. Miles keeps a tree in its experimental v2.
 - **Any trainer.** Agent Lightning ships only verl, though it exports each call's ids over HTTP. Miles launches its session server from its own training arguments and trains on its samples, though the server exports them over HTTP.
 
